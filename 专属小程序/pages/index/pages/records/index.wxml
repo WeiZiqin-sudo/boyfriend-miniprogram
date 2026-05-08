@@ -1,0 +1,54 @@
+<!-- 哥哥查看记录页面 -->
+<view class="page">
+  <!-- 页面标题 -->
+  <view class="header">
+    <view class="title">📋 哥哥查看记录</view>
+    <view class="subtitle">小宝大人的全部提交内容</view>
+  </view>
+
+  <!-- 记录列表 -->
+  <scroll-view class="records-scroll" scroll-y>
+    <view class="records-container">
+      <view wx:if="{{loading}}" class="empty-state">
+        <view class="empty-emoji">⏳</view>
+        <view class="empty-text">正在加载记录…</view>
+      </view>
+
+      <view wx:elif="{{loadError && records.length === 0}}" class="empty-state">
+        <view class="empty-emoji">📡</view>
+        <view class="empty-text">加载失败</view>
+        <view class="empty-hint">请检查网络与云开发环境后重进本页</view>
+      </view>
+
+      <!-- 无记录时的提示 -->
+      <view wx:elif="{{records.length === 0}}" class="empty-state">
+        <view class="empty-emoji">📭</view>
+        <view class="empty-text">暂无提交记录</view>
+        <view class="empty-hint">小宝大人还没有提交过需求哦～</view>
+      </view>
+
+      <block wx:else>
+        <view class="record-card" wx:for="{{records}}" wx:key="id">
+          <view class="record-header">
+            <view class="service-type">{{item.serviceType}}</view>
+            <view class="record-time">{{item.createTime}}</view>
+          </view>
+          <view class="record-content">
+            <view class="content-label">提交内容：</view>
+            <view class="content-text">{{item.content}}</view>
+          </view>
+          <view class="record-footer">
+            <view class="status-badge {{item.status === 'completed' ? 'completed' : 'pending'}}">
+              {{item.status === 'completed' ? '已完成' : '待处理'}}
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+
+  <!-- 返回按钮 -->
+  <view class="back-btn-container">
+    <button class="back-btn" bindtap="goBack">返回首页</button>
+  </view>
+</view>

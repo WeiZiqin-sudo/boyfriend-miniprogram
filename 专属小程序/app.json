@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/pages/index/index",
+    "pages/index/pages/records/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "专属男友服务菜单",
+    "navigationBarBackgroundColor": "#FFF8F1",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF8F1",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2"
+}

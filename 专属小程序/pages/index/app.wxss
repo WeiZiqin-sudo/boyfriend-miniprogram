@@ -1,0 +1,19 @@
+/* =========================
+   全局样式（整个小程序通用）
+   设计关键词：奶白 + 暖棕 + 浅粉，软萌治愈，全圆角
+   ========================= */
+
+   page {
+    /* 全局背景和文字基调 */
+    background: #fff8f1;
+    color: #5f4a3f;
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.6;
+  }
+  
+  /* 通用胶囊按钮风格，页面中可复用 */
+  .pill-btn {
+    border-radius: 999rpx;
+    border: none;
+  }
+  

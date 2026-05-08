@@ -1,0 +1,240 @@
+<!--
+  单页面：小宝大人的专属男友服务菜单
+  说明：
+  1) 使用 scroll-view + scroll-into-view 实现锚点平滑滚动
+  2) 吸顶导航通过 fixed 定位 + 预留占位高度实现
+  3) 所有按钮都保留可替换文案和电话
+-->
+<view class="page">
+  <!-- 固定吸顶导航：保持在顶部 -->
+  <view class="sticky-nav-wrapper">
+    <view class="sticky-nav">
+      <block wx:for="{{navList}}" wx:key="id">
+        <view
+          class="nav-item {{activeNav === item.id ? 'nav-item-active' : ''}}"
+          data-target="{{item.id}}"
+          bindtap="onNavTap"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 主滚动区域：通过 scroll-into-view 定位到对应板块 -->
+  <scroll-view
+    class="main-scroll"
+    scroll-y
+    scroll-with-animation
+    scroll-into-view="{{scrollIntoViewId}}"
+    bindscroll="onScroll"
+  >
+    <view class="content">
+      <!-- 顶部标题 -->
+      <view class="hero">
+        <view class="hero-title">小宝大人的专属男友服务菜单</view>
+        <view class="hero-subtitle">给最可爱的你 · 24小时在线宠爱</view>
+      </view>
+
+      <!-- 轮播图：自动播放、循环、指示点 -->
+      <swiper
+        class="banner-swiper"
+        indicator-dots
+        indicator-color="rgba(255,255,255,0.6)"
+        indicator-active-color="#C08A6B"
+        autoplay
+        circular
+        interval="3000"
+        duration="500"
+      >
+        <block wx:for="{{bannerList}}" wx:key="title">
+          <swiper-item>
+            <view class="banner-card">
+              <view class="banner-emoji">{{item.emoji}}</view>
+              <view class="banner-title">{{item.title}}</view>
+              <view class="banner-sub">{{item.sub}}</view>
+            </view>
+          </swiper-item>
+        </block>
+      </swiper>
+
+      <!-- 查看记录入口 -->
+      <view class="records-section">
+        <view class="section-title">📋 查看记录</view>
+        <view class="records-card">
+          <view class="records-info">
+            <view class="records-title">哥哥查看记录</view>
+            <view class="records-desc">查看小宝大人的全部提交内容</view>
+          </view>
+          <button class="records-btn" bindtap="toggleRecords">查看记录</button>
+        </view>
+        
+        <!-- 记录列表 -->
+        <view wx:if="{{showRecords}}" class="records-list">
+          <view wx:if="{{records.length === 0}}" class="empty-state">
+            <view class="empty-emoji">📭</view>
+            <view class="empty-text">暂无提交记录</view>
+          </view>
+          <block wx:for="{{records}}" wx:key="id">
+            <view class="record-item">
+              <view class="record-item-header">
+                <view class="record-type">{{item.serviceType}}</view>
+                <view class="record-time">{{item.createTime}}</view>
+              </view>
+              <view class="record-content">{{item.content}}</view>
+              <view 
+                class="record-status {{item.status === 'completed' ? 'completed' : 'pending'}}"
+                bindtap="markAsCompleted"
+                data-id="{{item.id}}"
+              >
+                {{item.status === 'completed' ? '已完成' : '待处理'}}
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 占位，用于避免内容被吸顶导航遮挡 -->
+      <view class="nav-placeholder"></view>
+
+      <!-- 板块1：专属投喂 -->
+      <view id="feed" class="section">
+        <view class="section-title">🍯 专属投喂</view>
+        <view class="card-grid">
+          <block wx:for="{{feedList}}" wx:key="name">
+            <view class="service-card press-bounce">
+              <view class="card-emoji">{{item.emoji}}</view>
+              <view class="card-name">{{item.name}}</view>
+              <view class="card-desc">{{item.desc}}</view>
+              <button
+                class="action-btn"
+                data-title="{{item.name}}"
+                data-msg="{{item.modalMsg}}"
+                bindtap="onSummonTap"
+              >
+                填写需求并召唤
+              </button>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 板块2：陪玩服务 -->
+      <view id="play" class="section">
+        <view class="section-title">🎈 陪玩服务</view>
+        <view class="card-grid">
+          <block wx:for="{{playList}}" wx:key="name">
+            <view class="service-card press-bounce">
+              <view class="card-emoji">{{item.emoji}}</view>
+              <view class="card-name">{{item.name}}</view>
+              <view class="card-desc">{{item.desc}}</view>
+              <button
+                class="action-btn"
+                data-title="{{item.name}}"
+                data-msg="{{item.modalMsg}}"
+                bindtap="onSummonTap"
+              >
+                填写需求并预约
+              </button>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 板块3：紧急求助 -->
+      <view id="help" class="section section-help">
+        <view class="section-title">🆘 紧急求助</view>
+        <view class="help-grid">
+          <view class="help-card press-bounce" data-type="emotion" bindtap="onHelpTap">
+            <view class="help-emoji">💗</view>
+            <view class="help-title">情绪急救站</view>
+            <view class="help-desc">委屈、难过、焦虑时，马上抱抱模式</view>
+          </view>
+
+          <view class="help-card press-bounce" data-type="peace" bindtap="onHelpTap">
+            <view class="help-emoji">🤝</view>
+            <view class="help-title">吵架和解通道</view>
+            <view class="help-desc">先哄后讲理，双向台阶都安排好</view>
+          </view>
+
+          <view class="help-card help-card-emergency press-bounce" bindtap="onEmergencyCall">
+            <view class="help-emoji">🚨</view>
+            <view class="help-title">紧急求助按钮</view>
+            <view class="help-desc">一键拨号，第一时间联系到我</view>
+          </view>
+
+          <view class="help-card press-bounce" data-type="night" bindtap="onHelpTap">
+            <view class="help-emoji">🌙</view>
+            <view class="help-title">深夜树洞</view>
+            <view class="help-desc">睡不着就来，我永远愿意听你说</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 板块4：专属特权 -->
+      <view id="vip" class="section">
+        <view class="section-title">✨ 专属特权</view>
+
+        <!-- 每日签到：签满 7 天获得 1 次心愿申请权 -->
+        <view class="sign-card">
+          <view class="sign-title">📅 每日签到（满7天得1次心愿申请权）</view>
+          <view class="sign-subtitle">当前连续签到：{{signCount}} 天</view>
+          <view class="sign-week">
+            <block wx:for="{{signDays}}" wx:key="index">
+              <view class="sign-dot {{item ? 'sign-dot-active' : ''}}">{{index + 1}}</view>
+            </block>
+          </view>
+          <button class="sign-btn press-bounce" bindtap="onSignTap">今日签到</button>
+        </view>
+
+        <view class="privilege-list">
+          <view class="privilege-item press-bounce">
+            <text class="privilege-emoji">🛍️</text>
+            <text class="privilege-text">心愿申请权：当前可用 {{wishCount}} 次（签到满7天+1）</text>
+          </view>
+          <button class="wish-apply-btn press-bounce" bindtap="onUseWishTap">使用1次心愿申请权</button>
+          <view wx:if="{{wishRecords.length > 0}}" class="wish-record-wrap">
+            <view class="wish-record-title">最近心愿记录</view>
+            <block wx:for="{{wishRecords}}" wx:key="index">
+              <view class="wish-record-item">· {{item.date}}：{{item.content}}</view>
+            </block>
+          </view>
+          <block wx:for="{{privilegeList}}" wx:key="text">
+            <view class="privilege-item press-bounce">
+              <text class="privilege-emoji">{{item.emoji}}</text>
+              <text class="privilege-text">{{item.text}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 给底部固定拨号栏预留空间 -->
+      <view class="bottom-safe-space"></view>
+    </view>
+  </scroll-view>
+
+  <!-- 固定底栏：超大一键拨号 -->
+  <view class="bottom-bar">
+    <button class="call-btn press-bounce" bindtap="onEmergencyCall">
+      ❤️ 一键拨号给哥哥
+    </button>
+  </view>
+
+  <!-- 自定义填写弹窗 -->
+  <view wx:if="{{showCustomModal}}" class="custom-modal-mask" catchtouchmove="true">
+    <view class="custom-modal-panel">
+      <view class="custom-modal-title">填写「{{modalServiceTitle}}」具体需求</view>
+      <textarea
+        class="custom-modal-textarea"
+        placeholder="{{modalPlaceholder}}"
+        maxlength="300"
+        value="{{customInputValue}}"
+        bindinput="onCustomInput"
+      />
+      <view class="custom-modal-actions">
+        <button class="modal-btn modal-btn-cancel" bindtap="onCloseCustomModal">取消</button>
+        <button class="modal-btn modal-btn-confirm" bindtap="onConfirmCustomModal">确认提交</button>
+      </view>
+    </view>
+  </view>
+</view>
